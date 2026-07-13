@@ -56,9 +56,9 @@ prepare_raw_schema
 ### Camadas (medallion architecture)
 
 
-`raw.yellow_tripdata` (bronze) Cópia fiel dos parquets originais + `_ingest_time` (auditoria de quando cada carga aconteceu). Nenhuma transformação.
-`trusted.yellow_tripdata` (silver) **Qualidade do dado** remove nulos em pickup/dropoff, remove dropoff antes do pickup, remove `trip_distance <= 0` e `passenger_count <= 0`, remove duplicatas exatas, tipa corretamente as colunas, aplica `TRIM`/`UPPER` no único campo texto (`store_and_fwd_flag`). Preserva **todas** as colunas do raw (maior fidelidade ao dado original) e adiciona `pickup_date`/`dropoff_date`/`trip_duration_minutes` como colunas derivadas. |
-`refined.trips` (gold) **Curadoria para o negócio**: recorte das colunas relevantes para as perguntas do desafio, mais a métrica derivada `avg_speed_mph` (calculada a partir de `trip_distance`/`trip_duration_minutes`, que já vêm tratados da trusted). É a tabela final de consumo. |
+- `raw.yellow_tripdata` (bronze) Cópia fiel dos parquets originais + `_ingest_time` (auditoria de quando cada carga aconteceu). Nenhuma transformação.
+- `trusted.yellow_tripdata` (silver) **Qualidade do dado** remove nulos em pickup/dropoff, remove dropoff antes do pickup, remove `trip_distance <= 0` e `passenger_count <= 0`, remove duplicatas exatas, tipa corretamente as colunas, aplica `TRIM`/`UPPER` no único campo texto (`store_and_fwd_flag`). Preserva **todas** as colunas do raw (maior fidelidade ao dado original) e adiciona `pickup_date`/`dropoff_date`/`trip_duration_minutes` como colunas derivadas. |
+- `refined.trips` (gold) **Curadoria para o negócio**: recorte das colunas relevantes para as perguntas do desafio, mais a métrica derivada `avg_speed_mph` (calculada a partir de `trip_distance`/`trip_duration_minutes`, que já vêm tratados da trusted). É a tabela final de consumo. |
 
 A regra de responsabilidade usada: a **trusted responde "esse dado está certo?"** (qualidade, tipagem, deduplicação — de propósito geral, reutilizável por qualquer consumidor futuro), e a **refined responde "o que o negócio precisa para consumir isso direto?"** (recorte e métricas específicas para este caso de uso).
 
